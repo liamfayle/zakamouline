@@ -1,9 +1,9 @@
 
 import numpy as np
 import sys
-sys.path.append('../BSM')
-from bsm import BsmOption
+from bsm import BsmOption, OptionPosition
 import matplotlib.pyplot as plt
+from copy import deepcopy
 
 
 def getH0(lambda_, gamma_lower, spot, sigma, time):
@@ -54,32 +54,53 @@ def getSigmaModified(sigma, k, isLong):
         return np.sqrt(sigma**2 * (1 - k))
 
 
-def hedgebands(option, lambda_, gamma_lower, isLong, type):
+def hedgebands(position, lambda_, gamma_lower):
     '''
-    @Params option - BsmOption object \n
+    NOTE [1] Since taking position as argumenet if if single option it must be added to a position object \n
+    NOTE [2] Since getting first leg and using params['isLong'] will not work for spreads that are not either ALL long or ALL short (ie straddle would be fine but short condor would fail) \n
+
+    TODO Fix note 2  \n
+
+    @Params position - OptionPosition Position\n
             lambda_ - proportional tracnsaction cost where "tc = lambda_ * spot * numShares" \n
-            gamma_lower - risk aversion param
-            isLong - true if long option, false if short option \n
-            type - P or C
+            gamma_lower - risk aversion param \n
     @Return h_plus - positive delta hedge band \n
             h_neg  - negative delta hedge band \n
 
             Note option sigma is not changed (is reset in func)
     '''
-    params = option.params
-    k = getK(lambda_, params['T'], params['r'], params['sigma'], gamma_lower, params['K'], option.gamma())
-    h0 = getH0(lambda_, gamma_lower, params['S'], params['sigma'], params['T'])
-    h1 = getH1(lambda_, params['T'], params['r'], params['sigma'], option.gamma(), gamma_lower)
 
-    sigma = params['sigma']
-    sigma_m = getSigmaModified(sigma, k, isLong)
-    option.set_sigma(sigma_m)
+    params = position.getLeg(0).params
+    k = getK(lambda_, params['T'], params['r'], position.sigma(), gamma_lower, params['S'], position.gamma())
+    h0 = getH0(lambda_, gamma_lower, params['S'], position.sigma(), params['T'])
+    h1 = getH1(lambda_, params['T'], params['r'], position.sigma(), position.gamma(), gamma_lower)
 
-    h_plus = option.delta(type) + (h1 + h0)
-    h_neg = option.delta(type) - (h1 + h0)
-
-    option.set_sigma(sigma)
+    position_copied = deepcopy(position)
+    sigma_m = getSigmaModified(position.sigma(), k, params['isLong']) #Applies to NOTE 2
+    position_copied.updateSigma(sigma_m)
+    h_plus = position_copied.delta() + (h1 + h0)
+    h_neg = position_copied.delta() - (h1 + h0)
 
     return h_plus, h_neg
 
 
+
+
+'''pos_delta = []
+up_band = []
+down_band = []
+
+for i in range(20, 181):
+    call = BsmOption(True, 'C', i, 100, 365, 0.05, sigma=0.3)
+    put = BsmOption(True, 'P', i, 100, 365, 0.05, sigma=0.3)
+    pos = OptionPosition()
+    pos.addLegs([call, put])
+    h_plus, h_neg = hedgebands(pos, 0.02, 1)
+    pos_delta.append(pos.delta())
+    up_band.append(h_plus)
+    down_band.append(h_neg)
+
+
+print("posDelta = " + str(pos_delta))
+print("up_band = " + str(up_band))
+print("down_band = " + str(down_band))'''
