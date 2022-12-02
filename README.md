@@ -35,7 +35,7 @@ Risk aversion parameter (higher results in tighter bands) = 1
 '''
 up_band, down_band = hedgebands(short_straddle, 0.02, 1)
 ```
-- To obtain hedgebands for range of spot prices simply loop over the range of required spot and plus into hedgeband function.
+- Obtaining hedgebands for range of spot prices.
 ```python
 for i in range (0, 200)
     call = BsmOption(False, 'C', i, 100, 60, 0.05, sigma=0.3)
