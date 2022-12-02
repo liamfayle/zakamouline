@@ -47,3 +47,4 @@ for i in range (0, 200)
 ### Interpretation
 ![bands](https://user-images.githubusercontent.com/74878922/205398420-9167d891-339a-4832-9ed0-a82dffeddae8.jpg)
 - If position delta breaches a band, you buy the requisite number of shares to bring delta ***just*** inside closest band. This is referred to as hedging to the band.
+    - Eg: In the figure above, if an overnight gap brought your position to Δ = -0.70, you would hedge to the nearest band (down band) at Δ = -0.55 by purchasing 15 shares.
