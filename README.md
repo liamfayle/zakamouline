@@ -8,3 +8,42 @@ My other [repo](https://github.com/liamfayle/Black-Scholes-Merton "repo") contai
 ### References
 - [Optimal Hedging of Options with Transaction Costs](https://www.efmaefm.org/0EFMAMEETINGS/EFMA%20ANNUAL%20MEETINGS/2005-Milan/papers/284-zakamouline_paper.pdf "Optimal Hedging of Options with Transaction Costs") by Valeri. I. Zakamouline.
 - [Volatility Trading: 2nd Edition](https://www.amazon.com/Volatility-Trading-Website-Euan-Sinclair/dp/1118347137 "Volatility Trading: 2nd Edition") by Euan Sinclair.
+
+### Usage
+- Obtaining hedgeband values at current spot price.
+
+```python
+@Init Call & Put
+'''
+Spot = 100
+Strike = 100
+DTE = 60
+RFR = 5%
+Volatility = 30%
+'''
+call = BsmOption(False, 'C', 100, 100, 60, 0.05, sigma=0.3)
+put = BsmOption(False, 'P', 100, 100, 60, 0.05, sigma=0.3)
+
+#Init short straddle position
+short_straddle = OptionPosition([call, put])
+
+#Get hedgebands at current spot price
+'''
+Position = short_straddle
+Proportional transaction cost lambda where (tc = lambda * num_shares * spot) = 2%
+Risk aversion parameter (higher results in tighter bands) = 1
+'''
+up_band, down_band = hedgebands(short_straddle, 0.02, 1)
+```
+- To obtain hedgebands for range of spot prices simply loop over the range of required spot and plus into hedgeband function.
+```python
+for i in range (0, 200)
+    call = BsmOption(False, 'C', i, 100, 60, 0.05, sigma=0.3)
+    put = BsmOption(False, 'P', i, 100, 60, 0.05, sigma=0.3)
+    short_straddle = OptionPosition([call, put])
+    up_band, down_band = hedgebands(short_straddle, 0.02, 1)
+```
+
+### Interpretation
+![bands](https://user-images.githubusercontent.com/74878922/205398420-9167d891-339a-4832-9ed0-a82dffeddae8.jpg)
+- If position delta breaches a band, you buy the requisite number of shares to bring delta ***just*** inside closest band. This is referred to as hedging to the band.
