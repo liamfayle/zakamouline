@@ -1,8 +1,8 @@
 
 import numpy as np
 import sys
+sys.path.append('../BSM')
 from bsm import BsmOption, OptionPosition
-import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
@@ -82,25 +82,3 @@ def hedgebands(position, lambda_, gamma_lower):
     h_neg = position_copied.delta() - (h1 + h0)
 
     return h_plus, h_neg
-
-
-
-
-'''pos_delta = []
-up_band = []
-down_band = []
-
-for i in range(20, 181):
-    call = BsmOption(True, 'C', i, 100, 365, 0.05, sigma=0.3)
-    put = BsmOption(True, 'P', i, 100, 365, 0.05, sigma=0.3)
-    pos = OptionPosition()
-    pos.addLegs([call, put])
-    h_plus, h_neg = hedgebands(pos, 0.02, 1)
-    pos_delta.append(pos.delta())
-    up_band.append(h_plus)
-    down_band.append(h_neg)
-
-
-print("posDelta = " + str(pos_delta))
-print("up_band = " + str(up_band))
-print("down_band = " + str(down_band))'''
