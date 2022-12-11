@@ -82,3 +82,7 @@ def hedgebands(position, lambda_, gamma_lower):
     h_neg = position_copied.delta() - (h1 + h0)
 
     return h_plus, h_neg
+
+
+
+
