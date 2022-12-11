@@ -13,14 +13,12 @@ My other [repo](https://github.com/liamfayle/Black-Scholes-Merton "repo") contai
 - Obtaining hedgeband values at current spot price.
 
 ```python
-@Init Call & Put
-'''
+'''@Init Call & Put
 Spot = 100
 Strike = 100
 DTE = 60
 RFR = 5%
-Volatility = 30%
-'''
+Volatility = 30%'''
 call = BsmOption(False, 'C', 100, 100, 60, 0.05, sigma=0.3)
 put = BsmOption(False, 'P', 100, 100, 60, 0.05, sigma=0.3)
 
@@ -28,11 +26,9 @@ put = BsmOption(False, 'P', 100, 100, 60, 0.05, sigma=0.3)
 short_straddle = OptionPosition([call, put])
 
 #Get hedgebands at current spot price
-'''
-Position = short_straddle
+'''Position = short_straddle
 Proportional transaction cost lambda where (tc = lambda * num_shares * spot) = 2%
-Risk aversion parameter (higher results in tighter bands) = 1
-'''
+Risk aversion parameter (higher results in tighter bands) = 1'''
 up_band, down_band = hedgebands(short_straddle, 0.02, 1)
 ```
 - Obtaining hedgebands for range of spot prices.
